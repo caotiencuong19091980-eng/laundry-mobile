@@ -16,6 +16,14 @@
   <header class="app-header">
     <h1>Hệ thống quản lý giặt là Hương Thịnh cơ sở 1</h1>
     <p>A software program authored by Cuongct</p>
+    {% if session.get("username") %}
+    <div class="account-bar">
+      <span>Đăng nhập: <b>{{ session.get("username") }}</b></span>
+      <form method="post" action="{{ url_for('logout') }}">
+        <button type="submit" class="logout-btn">Đăng xuất</button>
+      </form>
+    </div>
+    {% endif %}
   </header>
 
   <main class="container">

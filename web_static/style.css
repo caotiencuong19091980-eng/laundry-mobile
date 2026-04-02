@@ -29,6 +29,22 @@ body {
   font-size: 13px;
   color: #475569;
 }
+.account-bar {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+.logout-btn {
+  border: none;
+  border-radius: 8px;
+  background: #ef4444;
+  color: #fff;
+  padding: 7px 12px;
+}
 .container {
   max-width: 1280px;
   margin: 0 auto;
@@ -119,6 +135,7 @@ summary { cursor: pointer; color: var(--primary-2); font-weight: 700; }
   padding: 8px;
   border-radius: 8px;
 }
+.inline-link { margin-left: 8px; padding: 5px 10px; font-size: 13px; }
 .delete-form { margin-top: 8px; }
 .btn-danger {
   border: none;
@@ -134,6 +151,22 @@ summary { cursor: pointer; color: var(--primary-2); font-weight: 700; }
 .flash.error { background: #fee2e2; border: 1px solid #fca5a5; }
 .empty { text-align: center; color: #64748b; }
 .debt-summary { margin: 8px 0 0; color: #991b1b; font-size: 15px; }
+.auth-card { max-width: 540px; margin: 8px auto; }
+.auth-form { display: grid; gap: 8px; }
+.remember-row {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+.forgot-box {
+  margin-top: 10px;
+  border: 1px dashed #f59e0b;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fffbeb;
+}
+.forgot-box p { margin: 0 0 6px; }
+.hint { color: #475569; font-size: 13px; margin-top: 8px; }
 
 @media (max-width: 900px) {
   .app-header { padding: 12px 10px 10px; }

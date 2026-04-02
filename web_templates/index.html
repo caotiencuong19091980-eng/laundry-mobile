@@ -56,6 +56,21 @@
 </section>
 
 <section class="card">
+  <h2>Tài khoản</h2>
+  <p>Đang đăng nhập: <b>{{ username }}</b></p>
+  <form method="post" action="{{ url_for('change_password') }}" class="report-row">
+    <label>Mật khẩu hiện tại<input type="password" name="current_password" required /></label>
+    <label>Mật khẩu mới<input type="password" name="new_password" required /></label>
+    <label>Xác nhận mật khẩu mới<input type="password" name="confirm_password" required /></label>
+    <button type="submit">Đổi mật khẩu</button>
+  </form>
+  <p class="debt-summary">
+    Quên mật khẩu? Gửi SMS tới <b>{{ sms_number }}</b> để lấy lại.
+    <a class="btn-link inline-link" href="sms:{{ sms_number }}?body=Toi quen mat khau he thong giat la, vui long ho tro lay lai.">Gửi SMS</a>
+  </p>
+</section>
+
+<section class="card">
   <h2>Danh sách đơn hàng</h2>
   <div class="table-wrap">
     <table>

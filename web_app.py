@@ -3,11 +3,12 @@
 import base64
 import os
 import sqlite3
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from pathlib import Path
 from typing import Any
 
-from flask import Flask, flash, redirect, render_template, request, send_from_directory, url_for
+from flask import Flask, flash, redirect, render_template, request, send_from_directory, session, url_for
+from werkzeug.security import check_password_hash, generate_password_hash
 try:
     import psycopg2
     from psycopg2.extras import RealDictCursor
@@ -21,6 +22,9 @@ STATUSES = ["Mới nhận", "Đang giặt", "Đã sấy", "Hoàn tất", "Đã t
 SERVICES = ["Giặt thường", "Giặt nhanh", "Giặt hấp", "Giặt sấy"]
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 IS_POSTGRES = bool(DATABASE_URL)
+DEFAULT_USERNAME = os.getenv("DEFAULT_USERNAME", "admin")
+DEFAULT_PASSWORD = os.getenv("DEFAULT_PASSWORD", "123456")
+SMS_RECOVERY_NUMBER = "0987567556"
 
 app = Flask(
     __name__,
@@ -28,6 +32,7 @@ app = Flask(
     static_folder="web_static",
 )
 app.secret_key = "huong-thinh-laundry-secret"
+app.permanent_session_lifetime = timedelta(days=30)
 
 
 def normalized_database_url() -> str:
@@ -56,6 +61,17 @@ def init_db() -> None:
     conn = get_conn()
     cur = conn.cursor()
     if IS_POSTGRES:
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id BIGSERIAL PRIMARY KEY,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                created_at TIMESTAMP NOT NULL,
+                updated_at TIMESTAMP NOT NULL
+            )
+            """
+        )
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS customers (
@@ -87,6 +103,17 @@ def init_db() -> None:
     else:
         cur.execute(
             """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+            """
+        )
+        cur.execute(
+            """
             CREATE TABLE IF NOT EXISTS customers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -114,8 +141,32 @@ def init_db() -> None:
             )
             """
         )
+    ensure_default_user(cur)
     conn.commit()
     conn.close()
+
+
+def ensure_default_user(cur) -> None:
+    now = datetime.now().isoformat(timespec="seconds")
+    if IS_POSTGRES:
+        cur.execute(
+            """
+            INSERT INTO users(username, password_hash, created_at, updated_at)
+            VALUES (%s, %s, %s::timestamp, %s::timestamp)
+            ON CONFLICT(username) DO NOTHING
+            """,
+            (DEFAULT_USERNAME, generate_password_hash(DEFAULT_PASSWORD), now, now),
+        )
+    else:
+        cur.execute("SELECT id FROM users WHERE username = ?", (DEFAULT_USERNAME,))
+        if not cur.fetchone():
+            cur.execute(
+                """
+                INSERT INTO users(username, password_hash, created_at, updated_at)
+                VALUES (?, ?, ?, ?)
+                """,
+                (DEFAULT_USERNAME, generate_password_hash(DEFAULT_PASSWORD), now, now),
+            )
 
 
 def upsert_customer(name: str, phone: str, address: str) -> int:
@@ -328,6 +379,114 @@ def qr_base64() -> str | None:
     return base64.b64encode(data).decode("ascii")
 
 
+def get_user_by_username(username: str):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql("SELECT id, username, password_hash FROM users WHERE username = ?"), (username,))
+    user = cur.fetchone()
+    conn.close()
+    return user
+
+
+def update_password(username: str, new_password: str) -> None:
+    conn = get_conn()
+    cur = conn.cursor()
+    now = datetime.now().isoformat(timespec="seconds")
+    if IS_POSTGRES:
+        cur.execute(
+            """
+            UPDATE users
+            SET password_hash = %s, updated_at = %s::timestamp
+            WHERE username = %s
+            """,
+            (generate_password_hash(new_password), now, username),
+        )
+    else:
+        cur.execute(
+            """
+            UPDATE users
+            SET password_hash = ?, updated_at = ?
+            WHERE username = ?
+            """,
+            (generate_password_hash(new_password), now, username),
+        )
+    conn.commit()
+    conn.close()
+
+
+@app.before_request
+def require_login():
+    public_endpoints = {
+        "login",
+        "manifest",
+        "service_worker",
+        "static",
+    }
+    if request.endpoint in public_endpoints:
+        return None
+    if session.get("username"):
+        return None
+    return redirect(url_for("login"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        remember = request.form.get("remember") == "on"
+
+        user = get_user_by_username(username)
+        if not user or not check_password_hash(user["password_hash"], password):
+            flash("Tên đăng nhập hoặc mật khẩu không đúng.", "error")
+            return render_template("login.html", sms_number=SMS_RECOVERY_NUMBER)
+
+        session["username"] = username
+        session.permanent = remember
+        flash("Đăng nhập thành công.", "success")
+        return redirect(url_for("index"))
+
+    if session.get("username"):
+        return redirect(url_for("index"))
+    return render_template("login.html", sms_number=SMS_RECOVERY_NUMBER)
+
+
+@app.post("/logout")
+def logout():
+    session.clear()
+    flash("Đã đăng xuất.", "success")
+    return redirect(url_for("login"))
+
+
+@app.post("/change-password")
+def change_password():
+    username = session.get("username")
+    if not username:
+        return redirect(url_for("login"))
+
+    current_password = request.form.get("current_password", "")
+    new_password = request.form.get("new_password", "")
+    confirm_password = request.form.get("confirm_password", "")
+
+    user = get_user_by_username(username)
+    if not user:
+        flash("Không tìm thấy tài khoản.", "error")
+        return redirect(url_for("index"))
+    if not check_password_hash(user["password_hash"], current_password):
+        flash("Mật khẩu hiện tại không đúng.", "error")
+        return redirect(url_for("index"))
+    if len(new_password) < 6:
+        flash("Mật khẩu mới phải có ít nhất 6 ký tự.", "error")
+        return redirect(url_for("index"))
+    if new_password != confirm_password:
+        flash("Xác nhận mật khẩu mới không khớp.", "error")
+        return redirect(url_for("index"))
+
+    update_password(username, new_password)
+    flash("Đổi mật khẩu thành công.", "success")
+    return redirect(url_for("index"))
+
+
 @app.route("/")
 def index():
     keyword = request.args.get("q", "").strip()
@@ -344,6 +503,7 @@ def index():
 
     return render_template(
         "index.html",
+        username=session.get("username", ""),
         rows=rows,
         keyword=keyword,
         statuses=STATUSES,
@@ -357,6 +517,7 @@ def index():
         report_unpaid=unpaid,
         total_debt=total_debt,
         debt_customers=len(debt_customers),
+        sms_number=SMS_RECOVERY_NUMBER,
         money=money,
     )
 
