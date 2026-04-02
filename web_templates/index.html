@@ -30,11 +30,29 @@
   <h2>Tìm kiếm đơn</h2>
   <form method="get" action="{{ url_for('index') }}" class="search-row">
     <input name="q" value="{{ keyword }}" placeholder="Mã đơn, tên, trạng thái, nợ..." />
+    <input type="hidden" name="report_from" value="{{ report_from }}" />
+    <input type="hidden" name="report_to" value="{{ report_to }}" />
     <button type="submit">Tìm</button>
   </form>
   {% if keyword and ('nợ' in keyword.lower() or 'khach no' in keyword.lower() or 'khách nợ' in keyword.lower()) %}
     <p class="debt-summary">Khách nợ: <b>{{ debt_customers }}</b> | Tổng nợ: <b>{{ money(total_debt) }}</b></p>
   {% endif %}
+</section>
+
+<section class="card">
+  <h2>Báo cáo doanh thu</h2>
+  <form method="get" action="{{ url_for('index') }}" class="report-row">
+    <input type="hidden" name="q" value="{{ keyword }}" />
+    <label>Từ ngày<input type="date" name="report_from" value="{{ report_from }}" /></label>
+    <label>Đến ngày<input type="date" name="report_to" value="{{ report_to }}" /></label>
+    <button type="submit">Xem báo cáo</button>
+  </form>
+  <div class="report-grid">
+    <div class="report-item"><span>Số đơn</span><b>{{ report_total_orders }}</b></div>
+    <div class="report-item"><span>Tổng doanh thu</span><b>{{ money(report_gross) }}</b></div>
+    <div class="report-item"><span>Đã thu</span><b>{{ money(report_paid) }}</b></div>
+    <div class="report-item"><span>Còn nợ</span><b>{{ money(report_unpaid) }}</b></div>
+  </div>
 </section>
 
 <section class="card">
@@ -49,15 +67,15 @@
       <tbody>
         {% for row in rows %}
         <tr>
-          <td>#{{ row['id'] }}</td>
-          <td>{{ row['name'] }}</td>
-          <td>{{ row['phone'] }}</td>
-          <td>{{ row['service_type'] }}</td>
-          <td>{{ money(row['total_amount']) }}</td>
-          <td>{{ money(row['paid_amount']) }}</td>
-          <td>{{ money(row['debt_amount'] if row['debt_amount'] > 0 else 0) }}</td>
-          <td>{{ row['status'] }}</td>
-          <td>
+          <td data-label="Mã">#{{ row['id'] }}</td>
+          <td data-label="Khách">{{ row['name'] }}</td>
+          <td data-label="Điện thoại">{{ row['phone'] }}</td>
+          <td data-label="Dịch vụ">{{ row['service_type'] }}</td>
+          <td data-label="Tổng">{{ money(row['total_amount']) }}</td>
+          <td data-label="Đã trả">{{ money(row['paid_amount']) }}</td>
+          <td data-label="Nợ">{{ money(row['debt_amount'] if row['debt_amount'] > 0 else 0) }}</td>
+          <td data-label="Trạng thái">{{ row['status'] }}</td>
+          <td data-label="Thao tác">
             <details>
               <summary>Update</summary>
               <form method="post" action="{{ url_for('update_order_route', order_id=row['id']) }}" class="mini-form">

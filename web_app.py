@@ -8,11 +8,19 @@ from pathlib import Path
 from typing import Any
 
 from flask import Flask, flash, redirect, render_template, request, url_for
+try:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+except ImportError:
+    psycopg2 = None
+    RealDictCursor = None
 
 DB_FILE = "laundry.db"
 PAYMENT_QR_FILE = "payment_qr.png"
 STATUSES = ["Mới nhận", "Đang giặt", "Đã sấy", "Hoàn tất", "Đã trả"]
 SERVICES = ["Giặt thường", "Giặt nhanh", "Giặt hấp", "Giặt sấy"]
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+IS_POSTGRES = bool(DATABASE_URL)
 
 app = Flask(
     __name__,
@@ -22,44 +30,90 @@ app = Flask(
 app.secret_key = "huong-thinh-laundry-secret"
 
 
-def get_conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_FILE)
+def normalized_database_url() -> str:
+    if DATABASE_URL.startswith("postgres://"):
+        return DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    return DATABASE_URL
+
+
+def get_conn():
+    if IS_POSTGRES:
+        if psycopg2 is None:
+            raise RuntimeError("Thiếu thư viện psycopg2-binary cho PostgreSQL.")
+        return psycopg2.connect(normalized_database_url(), cursor_factory=RealDictCursor)
+    conn = sqlite3.connect(os.getenv("DB_FILE", DB_FILE))
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def sql(query: str) -> str:
+    if IS_POSTGRES:
+        return query.replace("?", "%s")
+    return query
 
 
 def init_db() -> None:
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute(
-        """
-        CREATE TABLE IF NOT EXISTS customers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            phone TEXT NOT NULL UNIQUE,
-            address TEXT DEFAULT '',
-            created_at TEXT NOT NULL
+    if IS_POSTGRES:
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS customers (
+                id BIGSERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                phone TEXT NOT NULL UNIQUE,
+                address TEXT DEFAULT '',
+                created_at TIMESTAMP NOT NULL
+            )
+            """
         )
-        """
-    )
-    cur.execute(
-        """
-        CREATE TABLE IF NOT EXISTS orders (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            customer_id INTEGER NOT NULL,
-            service_type TEXT NOT NULL,
-            weight_kg REAL NOT NULL,
-            unit_price REAL NOT NULL,
-            total_amount REAL NOT NULL,
-            paid_amount REAL NOT NULL DEFAULT 0,
-            status TEXT NOT NULL,
-            due_date TEXT,
-            note TEXT DEFAULT '',
-            created_at TEXT NOT NULL,
-            FOREIGN KEY(customer_id) REFERENCES customers(id)
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS orders (
+                id BIGSERIAL PRIMARY KEY,
+                customer_id BIGINT NOT NULL REFERENCES customers(id),
+                service_type TEXT NOT NULL,
+                weight_kg DOUBLE PRECISION NOT NULL,
+                unit_price DOUBLE PRECISION NOT NULL,
+                total_amount DOUBLE PRECISION NOT NULL,
+                paid_amount DOUBLE PRECISION NOT NULL DEFAULT 0,
+                status TEXT NOT NULL,
+                due_date DATE,
+                note TEXT DEFAULT '',
+                created_at TIMESTAMP NOT NULL
+            )
+            """
         )
-        """
-    )
+    else:
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS customers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                phone TEXT NOT NULL UNIQUE,
+                address TEXT DEFAULT '',
+                created_at TEXT NOT NULL
+            )
+            """
+        )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS orders (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                service_type TEXT NOT NULL,
+                weight_kg REAL NOT NULL,
+                unit_price REAL NOT NULL,
+                total_amount REAL NOT NULL,
+                paid_amount REAL NOT NULL DEFAULT 0,
+                status TEXT NOT NULL,
+                due_date TEXT,
+                note TEXT DEFAULT '',
+                created_at TEXT NOT NULL,
+                FOREIGN KEY(customer_id) REFERENCES customers(id)
+            )
+            """
+        )
     conn.commit()
     conn.close()
 
@@ -68,22 +122,37 @@ def upsert_customer(name: str, phone: str, address: str) -> int:
     conn = get_conn()
     cur = conn.cursor()
     now = datetime.now().isoformat(timespec="seconds")
-    cur.execute("SELECT id FROM customers WHERE phone = ?", (phone,))
-    row = cur.fetchone()
-    if row:
-        cur.execute("UPDATE customers SET name = ?, address = ? WHERE id = ?", (name, address, row["id"]))
-        conn.commit()
-        customer_id = row["id"]
-    else:
+    if IS_POSTGRES:
         cur.execute(
             """
             INSERT INTO customers(name, phone, address, created_at)
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s::timestamp)
+            ON CONFLICT(phone) DO UPDATE
+            SET name = EXCLUDED.name,
+                address = EXCLUDED.address
+            RETURNING id
             """,
             (name, phone, address, now),
         )
+        customer_id = cur.fetchone()["id"]
         conn.commit()
-        customer_id = cur.lastrowid
+    else:
+        cur.execute("SELECT id FROM customers WHERE phone = ?", (phone,))
+        row = cur.fetchone()
+        if row:
+            cur.execute("UPDATE customers SET name = ?, address = ? WHERE id = ?", (name, address, row["id"]))
+            conn.commit()
+            customer_id = row["id"]
+        else:
+            cur.execute(
+                """
+                INSERT INTO customers(name, phone, address, created_at)
+                VALUES (?, ?, ?, ?)
+                """,
+                (name, phone, address, now),
+            )
+            conn.commit()
+            customer_id = cur.lastrowid
     conn.close()
     return int(customer_id)
 
@@ -133,7 +202,7 @@ def list_orders(keyword: str = "") -> list[sqlite3.Row]:
                 AND ({' OR '.join(conditions)})
                 ORDER BY o.id DESC
             """
-            cur.execute(query, tuple(params))
+            cur.execute(sql(query), tuple(params))
         else:
             cur.execute(
                 f"""
@@ -155,11 +224,13 @@ def list_orders(keyword: str = "") -> list[sqlite3.Row]:
             conditions.append("c.phone LIKE ?")
             params.append(kw)
         cur.execute(
+            sql(
             f"""
             {base}
             WHERE {' OR '.join(conditions)}
             ORDER BY o.id DESC
             """,
+            ),
             tuple(params),
         )
     else:
@@ -175,10 +246,32 @@ def list_orders(keyword: str = "") -> list[sqlite3.Row]:
     return rows
 
 
+def revenue_between(start_date: str, end_date: str):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        sql(
+            """
+            SELECT
+                COUNT(*) AS total_orders,
+                COALESCE(SUM(total_amount), 0) AS gross_revenue,
+                COALESCE(SUM(paid_amount), 0) AS paid_revenue
+            FROM orders
+            WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?)
+            """
+        ),
+        (start_date, end_date),
+    )
+    row = cur.fetchone()
+    conn.close()
+    return row
+
+
 def get_order(order_id: int) -> sqlite3.Row | None:
     conn = get_conn()
     cur = conn.cursor()
     cur.execute(
+        sql(
         """
         SELECT o.id, c.name, c.phone, c.address, o.service_type, o.weight_kg,
                o.unit_price, o.total_amount, o.paid_amount,
@@ -188,6 +281,7 @@ def get_order(order_id: int) -> sqlite3.Row | None:
         JOIN customers c ON c.id = o.customer_id
         WHERE o.id = ?
         """,
+        ),
         (order_id,),
     )
     row = cur.fetchone()
@@ -199,11 +293,13 @@ def update_order(order_id: int, status: str, paid_amount: float, note: str) -> N
     conn = get_conn()
     cur = conn.cursor()
     cur.execute(
+        sql(
         """
         UPDATE orders
         SET status = ?, paid_amount = ?, note = ?
         WHERE id = ?
         """,
+        ),
         (status, paid_amount, note, order_id),
     )
     conn.commit()
@@ -225,9 +321,17 @@ def qr_base64() -> str | None:
 @app.route("/")
 def index():
     keyword = request.args.get("q", "").strip()
+    report_from = request.args.get("report_from", str(date.today())).strip() or str(date.today())
+    report_to = request.args.get("report_to", str(date.today())).strip() or str(date.today())
+
     rows = list_orders(keyword)
     total_debt = sum(max(float(r["debt_amount"]), 0) for r in rows)
     debt_customers = {r["name"] for r in rows if float(r["debt_amount"]) > 0}
+    report = revenue_between(report_from, report_to)
+    gross = float(report["gross_revenue"] or 0)
+    paid = float(report["paid_revenue"] or 0)
+    unpaid = gross - paid
+
     return render_template(
         "index.html",
         rows=rows,
@@ -235,6 +339,12 @@ def index():
         statuses=STATUSES,
         services=SERVICES,
         today=str(date.today()),
+        report_from=report_from,
+        report_to=report_to,
+        report_total_orders=int(report["total_orders"] or 0),
+        report_gross=gross,
+        report_paid=paid,
+        report_unpaid=unpaid,
         total_debt=total_debt,
         debt_customers=len(debt_customers),
         money=money,
@@ -273,28 +383,53 @@ def create_order():
 
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute(
-        """
-        INSERT INTO orders(
-            customer_id, service_type, weight_kg, unit_price,
-            total_amount, paid_amount, status, due_date, note, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-        (
-            customer_id,
-            service,
-            weight,
-            unit_price,
-            total_amount,
-            paid_amount,
-            status,
-            due_date,
-            note,
-            now,
-        ),
-    )
-    conn.commit()
-    order_id = cur.lastrowid
+    if IS_POSTGRES:
+        cur.execute(
+            """
+            INSERT INTO orders(
+                customer_id, service_type, weight_kg, unit_price,
+                total_amount, paid_amount, status, due_date, note, created_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, NULLIF(%s, '')::date, %s, %s::timestamp)
+            RETURNING id
+            """,
+            (
+                customer_id,
+                service,
+                weight,
+                unit_price,
+                total_amount,
+                paid_amount,
+                status,
+                due_date,
+                note,
+                now,
+            ),
+        )
+        conn.commit()
+        order_id = cur.fetchone()["id"]
+    else:
+        cur.execute(
+            """
+            INSERT INTO orders(
+                customer_id, service_type, weight_kg, unit_price,
+                total_amount, paid_amount, status, due_date, note, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                customer_id,
+                service,
+                weight,
+                unit_price,
+                total_amount,
+                paid_amount,
+                status,
+                due_date,
+                note,
+                now,
+            ),
+        )
+        conn.commit()
+        order_id = cur.lastrowid
     conn.close()
 
     flash(f"Đã tạo đơn #{order_id}.", "success")
