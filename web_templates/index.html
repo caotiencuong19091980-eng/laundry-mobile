@@ -1,0 +1,91 @@
+﻿{% extends "base.html" %}
+{% block title %}Quản lý đơn hàng{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Tạo đơn mới</h2>
+  <form method="post" action="{{ url_for('create_order') }}" class="grid-form">
+    <label>Tên khách hàng<input name="name" required /></label>
+    <label>Điện thoại<input name="phone" required /></label>
+    <label>Địa chỉ<input name="address" /></label>
+    <label>Dịch vụ
+      <select name="service_type">
+        {% for s in services %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Số kg<input name="weight_kg" type="number" min="0.1" step="0.1" value="1" required /></label>
+    <label>Đơn giá<input name="unit_price" value="15000" required /></label>
+    <label>Đã trả<input name="paid_amount" value="0" /></label>
+    <label>Trạng thái
+      <select name="status">
+        {% for s in statuses %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Hẹn trả<input name="due_date" type="date" value="{{ today }}" /></label>
+    <label class="span-2">Ghi chú<input name="note" /></label>
+    <button class="btn-primary span-2" type="submit">Tạo đơn</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Tìm kiếm đơn</h2>
+  <form method="get" action="{{ url_for('index') }}" class="search-row">
+    <input name="q" value="{{ keyword }}" placeholder="Mã đơn, tên, trạng thái, nợ..." />
+    <button type="submit">Tìm</button>
+  </form>
+  {% if keyword and ('nợ' in keyword.lower() or 'khach no' in keyword.lower() or 'khách nợ' in keyword.lower()) %}
+    <p class="debt-summary">Khách nợ: <b>{{ debt_customers }}</b> | Tổng nợ: <b>{{ money(total_debt) }}</b></p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Danh sách đơn hàng</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Mã</th><th>Khách</th><th>Điện thoại</th><th>Dịch vụ</th><th>Tổng</th><th>Đã trả</th><th>Nợ</th><th>Trạng thái</th><th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>#{{ row['id'] }}</td>
+          <td>{{ row['name'] }}</td>
+          <td>{{ row['phone'] }}</td>
+          <td>{{ row['service_type'] }}</td>
+          <td>{{ money(row['total_amount']) }}</td>
+          <td>{{ money(row['paid_amount']) }}</td>
+          <td>{{ money(row['debt_amount'] if row['debt_amount'] > 0 else 0) }}</td>
+          <td>{{ row['status'] }}</td>
+          <td>
+            <details>
+              <summary>Update</summary>
+              <form method="post" action="{{ url_for('update_order_route', order_id=row['id']) }}" class="mini-form">
+                <label>Trạng thái
+                  <select name="status">
+                    {% for s in statuses %}<option value="{{ s }}" {% if s == row['status'] %}selected{% endif %}>{{ s }}</option>{% endfor %}
+                  </select>
+                </label>
+                <label>Đã trả (tổng)<input name="paid_amount" value="{{ row['paid_amount']|int }}" /></label>
+                <label>Còn nợ<input name="debt_amount" value="{{ (row['debt_amount'] if row['debt_amount'] > 0 else 0)|int }}" /></label>
+                <label>Chế độ
+                  <select name="paid_mode">
+                    <option value="paid">Nhập theo đã trả</option>
+                    <option value="debt">Nhập theo nợ</option>
+                  </select>
+                </label>
+                <label>Ghi chú<input name="note" value="{{ row['note'] or '' }}" /></label>
+                <button type="submit">Lưu</button>
+                <a class="btn-link" href="{{ url_for('invoice', order_id=row['id']) }}" target="_blank">In đơn</a>
+              </form>
+            </details>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" class="empty">Chưa có dữ liệu.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

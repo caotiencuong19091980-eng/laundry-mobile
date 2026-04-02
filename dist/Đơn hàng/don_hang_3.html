@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang='vi'>
+<head>
+  <meta charset='utf-8'/>
+  <title>Đơn hàng #3</title>
+  <style>
+    @page {
+      size: 57mm 30mm;
+      margin: 1.5mm;
+    }
+    html, body {
+      width: 57mm;
+      margin: 0;
+      padding: 0;
+      font-family: 'Times New Roman', serif;
+      color: #111;
+      background: #fff;
+    }
+    .wrap {
+      width: 54mm;
+      min-height: 27mm;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding: 1mm 1.2mm 1mm 1.2mm;
+      border: 0.2mm dashed #555;
+    }
+    .title {
+      text-align: center;
+      font-size: 8pt;
+      font-weight: bold;
+      line-height: 1.1;
+      margin-bottom: 0.8mm;
+    }
+    .meta {
+      font-size: 6.4pt;
+      line-height: 1.1;
+      margin-bottom: 0.3mm;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .split {
+      display: flex;
+      gap: 1.2mm;
+      margin-top: 0.5mm;
+    }
+    .left {
+      flex: 1;
+      min-width: 0;
+    }
+    .right {
+      width: 13.5mm;
+      text-align: center;
+    }
+    .qr {
+      width: 12.5mm;
+      height: 12.5mm;
+      border: 0.2mm solid #333;
+      padding: 0.3mm;
+      box-sizing: border-box;
+    }
+    .amount {
+      font-size: 6.2pt;
+      font-weight: bold;
+      margin-top: 0.4mm;
+      line-height: 1.1;
+    }
+    .divider {
+      border-top: 0.2mm dashed #333;
+      margin: 0.6mm 0;
+    }
+    .footer {
+      font-size: 5.8pt;
+      text-align: center;
+      line-height: 1.1;
+      margin-top: 0.4mm;
+    }
+    .print-btn {
+      margin-top: 1.2mm;
+      width: 100%;
+      background:#0b5ed7;
+      color:#fff;
+      border:none;
+      border-radius:2mm;
+      padding:1.6mm 0;
+      font-family:'Times New Roman', serif;
+      font-size:7pt;
+      cursor:pointer;
+    }
+    .print-btn {
+      display: none;
+    }
+    @media screen {
+      body {
+        background: #f3f4f6;
+        padding: 10px;
+      }
+      .print-btn {
+        display: block;
+      }
+    }
+    @media print {
+      .print-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <div class='title'>HÓA ĐƠN GIẶT LÀ</div>
+    <div class='meta'>Mã đơn: #3</div>
+    <div class='meta'>Khách: Hùng</div>
+    <div class='meta'>SĐT: 345</div>
+    <div class='meta'>DV: Giặt sấy | 1.00kg</div>
+    <div class='meta'>Tổng: 25.000 VND</div>
+    <div class='meta'>Đã trả: 25.000 VND | Nợ: 0 VND</div>
+    <div class='meta'>Trạng thái: Đã trả</div>
+    <div class='meta'>Trả đồ: 2026-04-02</div>
+    <div class='divider'></div>
+    <div class='split'>
+      <div class='left'>
+        <div class='meta'>Thanh toán QR</div>
+        <div class='amount'>Số tiền: 25.000 VND</div>
+      </div>
+      <div class='right'>
+        <img src='payment_qr.png?v=20260402104841' alt='QR thanh toán' class='qr'/>
+      </div>
+    </div>
+    <div class='footer'>A software program authored by Cuongct</div>
+    <button class='print-btn' onclick='window.print()'>In hóa đơn</button>
+  </div>
+</body>
+</html>

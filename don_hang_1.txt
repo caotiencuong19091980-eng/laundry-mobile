@@ -1,0 +1,15 @@
+PHIẾU TRẢ ĐỒ GIẶT LÀ
+A software program authored by Cuongct
+--------------------------------------------
+Mã đơn hàng: #1
+Tên khách hàng: Cường
+Số điện thoại: 0987567556
+Dịch vụ: Giặt thường
+Khối lượng: 2.00 kg
+Thành tiền: 30.000 VND
+Đã thanh toán: 0 VND
+Trạng thái: Mới nhận
+Thời gian trả: 2026-04-01
+Ghi chú: lấy nhanh
+--------------------------------------------
+Cảm ơn quý khách đã sử dụng dịch vụ.

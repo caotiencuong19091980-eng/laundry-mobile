@@ -1,0 +1,15 @@
+PHIẾU TRẢ ĐỒ GIẶT LÀ
+A software program authored by Cuongct
+--------------------------------------------
+Mã đơn hàng: #8
+Tên khách hàng: Hoàng
+Số điện thoại: 111
+Dịch vụ: Giặt thường
+Khối lượng: 1.00 kg
+Thành tiền: 15.000 VND
+Đã thanh toán: 0 VND
+Trạng thái: Mới nhận
+Thời gian trả: 2026-04-02
+Ghi chú: Không có
+--------------------------------------------
+Cảm ơn quý khách đã sử dụng dịch vụ.

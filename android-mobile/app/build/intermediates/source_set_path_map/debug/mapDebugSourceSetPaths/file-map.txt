@@ -1,0 +1,34 @@
+com.huongthinh.laundrymobile.app-lifecycle-livedata-core-2.6.2-0 C:\Users\Admin\.gradle\caches\9.0.0\transforms\157029cc91fb7e9f9b73948c0e8a9780\transformed\lifecycle-livedata-core-2.6.2\res
+com.huongthinh.laundrymobile.app-appcompat-1.7.0-1 C:\Users\Admin\.gradle\caches\9.0.0\transforms\1d204ac0edb427ddae4f23c79c12f47f\transformed\appcompat-1.7.0\res
+com.huongthinh.laundrymobile.app-constraintlayout-2.1.4-2 C:\Users\Admin\.gradle\caches\9.0.0\transforms\29916e3d880d6ebe0459458d064e0232\transformed\constraintlayout-2.1.4\res
+com.huongthinh.laundrymobile.app-transition-1.5.0-3 C:\Users\Admin\.gradle\caches\9.0.0\transforms\29e0cd98aa7bcdadc0986ce127827e6c\transformed\transition-1.5.0\res
+com.huongthinh.laundrymobile.app-material-1.12.0-4 C:\Users\Admin\.gradle\caches\9.0.0\transforms\2e9992603a1f56be63d03b994d67a322\transformed\material-1.12.0\res
+com.huongthinh.laundrymobile.app-jetified-savedstate-1.2.1-5 C:\Users\Admin\.gradle\caches\9.0.0\transforms\3aeec099091d754a9f23a5a165261d45\transformed\jetified-savedstate-1.2.1\res
+com.huongthinh.laundrymobile.app-jetified-profileinstaller-1.3.1-6 C:\Users\Admin\.gradle\caches\9.0.0\transforms\45d48f82b93e81fe2bc4c1e8f488e0b6\transformed\jetified-profileinstaller-1.3.1\res
+com.huongthinh.laundrymobile.app-jetified-annotation-experimental-1.4.0-7 C:\Users\Admin\.gradle\caches\9.0.0\transforms\4e18db0343eb095d4b8bc111b79b4dbf\transformed\jetified-annotation-experimental-1.4.0\res
+com.huongthinh.laundrymobile.app-drawerlayout-1.1.1-8 C:\Users\Admin\.gradle\caches\9.0.0\transforms\5942b668ce535ee7ce7affa072dbd880\transformed\drawerlayout-1.1.1\res
+com.huongthinh.laundrymobile.app-recyclerview-1.1.0-9 C:\Users\Admin\.gradle\caches\9.0.0\transforms\5ede104ae7a02dd35dee429f44e73516\transformed\recyclerview-1.1.0\res
+com.huongthinh.laundrymobile.app-jetified-emoji2-views-helper-1.3.0-10 C:\Users\Admin\.gradle\caches\9.0.0\transforms\6defc05078031b45f5a8cb98f40af692\transformed\jetified-emoji2-views-helper-1.3.0\res
+com.huongthinh.laundrymobile.app-jetified-startup-runtime-1.1.1-11 C:\Users\Admin\.gradle\caches\9.0.0\transforms\726e5c1106c33e9dcfa0d98d2cef0744\transformed\jetified-startup-runtime-1.1.1\res
+com.huongthinh.laundrymobile.app-jetified-core-ktx-1.13.1-12 C:\Users\Admin\.gradle\caches\9.0.0\transforms\7a84b0d7482885779cb46aeb51d88b5c\transformed\jetified-core-ktx-1.13.1\res
+com.huongthinh.laundrymobile.app-core-1.13.1-13 C:\Users\Admin\.gradle\caches\9.0.0\transforms\7fa388b9977e6f6b7be669e6d7204778\transformed\core-1.13.1\res
+com.huongthinh.laundrymobile.app-jetified-lifecycle-process-2.6.2-14 C:\Users\Admin\.gradle\caches\9.0.0\transforms\82c2567d62ccf3fee99a88a16c72230e\transformed\jetified-lifecycle-process-2.6.2\res
+com.huongthinh.laundrymobile.app-fragment-1.5.4-15 C:\Users\Admin\.gradle\caches\9.0.0\transforms\84e423bf5eaad1ece9227c2d4d38716d\transformed\fragment-1.5.4\res
+com.huongthinh.laundrymobile.app-jetified-lifecycle-viewmodel-savedstate-2.6.2-16 C:\Users\Admin\.gradle\caches\9.0.0\transforms\862e204654d9a238a2ffb878a49fbe16\transformed\jetified-lifecycle-viewmodel-savedstate-2.6.2\res
+com.huongthinh.laundrymobile.app-coordinatorlayout-1.1.0-17 C:\Users\Admin\.gradle\caches\9.0.0\transforms\88bfa239fdb5c2b5ba949a4968d2bc33\transformed\coordinatorlayout-1.1.0\res
+com.huongthinh.laundrymobile.app-jetified-appcompat-resources-1.7.0-18 C:\Users\Admin\.gradle\caches\9.0.0\transforms\93c87096c2eaaf2b43ad40324888ab28\transformed\jetified-appcompat-resources-1.7.0\res
+com.huongthinh.laundrymobile.app-lifecycle-runtime-2.6.2-19 C:\Users\Admin\.gradle\caches\9.0.0\transforms\9edda55d226768e20884516696c07d8e\transformed\lifecycle-runtime-2.6.2\res
+com.huongthinh.laundrymobile.app-lifecycle-viewmodel-2.6.2-20 C:\Users\Admin\.gradle\caches\9.0.0\transforms\c0dec186b20876e9b90f63c7ebfe8a97\transformed\lifecycle-viewmodel-2.6.2\res
+com.huongthinh.laundrymobile.app-jetified-viewpager2-1.0.0-21 C:\Users\Admin\.gradle\caches\9.0.0\transforms\c1fadd9fb92a01274d6262363ff0e6f7\transformed\jetified-viewpager2-1.0.0\res
+com.huongthinh.laundrymobile.app-jetified-activity-1.8.0-22 C:\Users\Admin\.gradle\caches\9.0.0\transforms\c831bd288bb1519c052d9bcdc24329b5\transformed\jetified-activity-1.8.0\res
+com.huongthinh.laundrymobile.app-core-runtime-2.2.0-23 C:\Users\Admin\.gradle\caches\9.0.0\transforms\d071122972341a7e0b3a8adb0953c8a6\transformed\core-runtime-2.2.0\res
+com.huongthinh.laundrymobile.app-jetified-emoji2-1.3.0-24 C:\Users\Admin\.gradle\caches\9.0.0\transforms\e837ba1e9e2300aaa6aed14ef343292a\transformed\jetified-emoji2-1.3.0\res
+com.huongthinh.laundrymobile.app-cardview-1.0.0-25 C:\Users\Admin\.gradle\caches\9.0.0\transforms\e9894970827f6f3d47a6a0f53783cc8b\transformed\cardview-1.0.0\res
+com.huongthinh.laundrymobile.app-lifecycle-livedata-2.6.2-26 C:\Users\Admin\.gradle\caches\9.0.0\transforms\efe4b6ad9c568ad8660dbe72d7799de0\transformed\lifecycle-livedata-2.6.2\res
+com.huongthinh.laundrymobile.app-pngs-27 C:\Users\Admin\Documents\New project\Code Quản lý giặt là\android-mobile\app\build\generated\res\pngs\debug
+com.huongthinh.laundrymobile.app-resValues-28 C:\Users\Admin\Documents\New project\Code Quản lý giặt là\android-mobile\app\build\generated\res\resValues\debug
+com.huongthinh.laundrymobile.app-packageDebugResources-29 C:\Users\Admin\Documents\New project\Code Quản lý giặt là\android-mobile\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.huongthinh.laundrymobile.app-packageDebugResources-30 C:\Users\Admin\Documents\New project\Code Quản lý giặt là\android-mobile\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.huongthinh.laundrymobile.app-debug-31 C:\Users\Admin\Documents\New project\Code Quản lý giặt là\android-mobile\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.huongthinh.laundrymobile.app-debug-32 C:\Users\Admin\Documents\New project\Code Quản lý giặt là\android-mobile\app\src\debug\res
+com.huongthinh.laundrymobile.app-main-33 C:\Users\Admin\Documents\New project\Code Quản lý giặt là\android-mobile\app\src\main\res

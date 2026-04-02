@@ -1,0 +1,62 @@
+{
+  "versions": [
+    {
+      "schema": 1,
+      "id": "pythoncore-3.14-64",
+      "sort-version": "3.14.3",
+      "company": "PythonCore",
+      "tag": "3.14-64",
+      "install-for": [
+        "3.14.3-64",
+        "3.14-64",
+        "3-64",
+        "3.14-dev-64",
+        "3-dev-64"
+      ],
+      "alias": [
+        {
+          "target": "python.exe",
+          "name": "python3.14.exe"
+        },
+        {
+          "target": "python.exe",
+          "name": "python3.14-64.exe"
+        },
+        {
+          "target": "python.exe",
+          "name": "python3.exe"
+        },
+        {
+          "target": "python.exe",
+          "name": "python3-64.exe"
+        },
+        {
+          "target": "pythonw.exe",
+          "windowed": 1,
+          "name": "pythonw3.14.exe"
+        },
+        {
+          "target": "pythonw.exe",
+          "windowed": 1,
+          "name": "pythonw3.14-64.exe"
+        },
+        {
+          "target": "pythonw.exe",
+          "windowed": 1,
+          "name": "pythonw3.exe"
+        },
+        {
+          "target": "pythonw.exe",
+          "windowed": 1,
+          "name": "pythonw3-64.exe"
+        }
+      ],
+      "display-name": "Python 3.14.3",
+      "executable": ".\\python.exe",
+      "url": "pythoncore-3.14-64-3.14.3.zip",
+      "hash": {
+        "sha256": "ec781bb03f9638d136b24da7c83b4db1652ce767848aa856a30bb87cfdb1abe4"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+PHIẾU TRẢ ĐỒ GIẶT LÀ
+A software program authored by Cuongct
+--------------------------------------------
+Mã đơn hàng: #7
+Tên khách hàng: Phạm Khánh Ly
+Số điện thoại: 3333
+Dịch vụ: Giặt thường
+Khối lượng: 1.00 kg
+Thành tiền: 15.000 VND
+Đã thanh toán: 10.000 VND
+Trạng thái: Đã trả
+Thời gian trả: 2026-04-02
+Ghi chú: Thanh toán khi trả đồ: đã thu 10.000 VND, còn nợ 5.000 VND
+--------------------------------------------
+Cảm ơn quý khách đã sử dụng dịch vụ.

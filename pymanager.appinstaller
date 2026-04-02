@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppInstaller
+    xmlns="http://schemas.microsoft.com/appx/appinstaller/2018"
+    Version="26.0.240.0"
+    Uri="https://www.python.org/ftp/python/pymanager/pymanager.appinstaller">
+
+    <MainPackage
+        Name="PythonSoftwareFoundation.PythonManager"
+        Publisher="CN=Python Software Foundation, O=Python Software Foundation, L=Beaverton, S=Oregon, C=US"
+        Version="26.0.240.0"
+        ProcessorArchitecture="x64"
+        Uri="https://www.python.org/ftp/python/pymanager/python-manager-26.0.msix" />
+
+    <UpdateSettings>
+        <OnLaunch HoursBetweenUpdateChecks="24"/>
+        <ForceUpdateFromAnyVersion>true</ForceUpdateFromAnyVersion>
+    </UpdateSettings>
+
+</AppInstaller>
+

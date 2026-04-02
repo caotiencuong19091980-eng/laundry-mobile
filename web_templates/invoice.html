@@ -1,0 +1,56 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hóa đơn #{{ order['id'] }}</title>
+  <style>
+    @page { size: 57mm 30mm; margin: 1.5mm; }
+    html, body { width: 57mm; margin: 0; padding: 0; font-family: "Times New Roman", serif; }
+    .wrap { width: 54mm; min-height: 27mm; margin: 0 auto; border: 0.2mm dashed #444; box-sizing: border-box; padding: 1mm; }
+    .title { text-align: center; font-size: 8pt; font-weight: bold; margin-bottom: 0.6mm; }
+    .line { font-size: 6.2pt; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .split { display: flex; gap: 1mm; margin-top: 0.6mm; }
+    .left { flex: 1; }
+    .right { width: 13mm; text-align: center; }
+    .qr { width: 12.5mm; height: 12.5mm; border: 0.2mm solid #333; padding: 0.3mm; box-sizing: border-box; }
+    .amount { font-size: 6.2pt; font-weight: bold; margin-top: 0.4mm; }
+    .divider { border-top: 0.2mm dashed #333; margin: 0.5mm 0; }
+    .credit { font-size: 5.7pt; text-align: center; margin-top: 0.4mm; }
+    .print-btn { display: none; }
+    @media screen {
+      body { background: #f3f4f6; padding: 10px; }
+      .print-btn { display: block; width: 100%; margin-top: 10px; border: none; background: #0b5ed7; color: #fff; border-radius: 8px; padding: 8px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">HÓA ĐƠN GIẶT LÀ</div>
+    <div class="line">Mã đơn: #{{ order['id'] }}</div>
+    <div class="line">Khách: {{ order['name'] }}</div>
+    <div class="line">SĐT: {{ order['phone'] }}</div>
+    <div class="line">DV: {{ order['service_type'] }} | {{ "%.2f"|format(order['weight_kg']) }}kg</div>
+    <div class="line">Tổng: {{ money(order['total_amount']) }}</div>
+    <div class="line">Đã trả: {{ money(order['paid_amount']) }} | Nợ: {{ money(order['debt_amount'] if order['debt_amount'] > 0 else 0) }}</div>
+    <div class="line">Trạng thái: {{ order['status'] }}</div>
+    <div class="line">In lúc: {{ now }}</div>
+    <div class="divider"></div>
+    <div class="split">
+      <div class="left">
+        <div class="line">Thanh toán QR</div>
+        <div class="amount">Số tiền: {{ money(order['total_amount']) }}</div>
+      </div>
+      <div class="right">
+        {% if qr %}
+          <img class="qr" src="data:image/png;base64,{{ qr }}" alt="QR" />
+        {% else %}
+          <div class="line">Chưa có QR</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="credit">A software program authored by Cuongct</div>
+    <button class="print-btn" onclick="window.print()">In hóa đơn</button>
+  </div>
+</body>
+</html>

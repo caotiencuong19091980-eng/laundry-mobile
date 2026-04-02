@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang='vi'>
+<head>
+  <meta charset='utf-8'/>
+  <title>Đơn hàng #2</title>
+  <style>
+    body { font-family: 'Times New Roman', serif; color:#111; margin:24px; }
+    .wrap { max-width: 820px; margin: 0 auto; border:1px solid #ddd; border-radius:12px; padding:20px; }
+    h1 { margin:0 0 8px 0; color:#0b5ed7; }
+    .author { text-align:right; font-size:12px; color:#6b7280; margin-bottom:8px; }
+    .grid { display:grid; grid-template-columns: 1fr 260px; gap:18px; }
+    table { width:100%; border-collapse: collapse; }
+    td { padding:6px 0; vertical-align: top; }
+    .label { font-weight:bold; width:180px; }
+    .amount { color:#b42318; font-size:20px; font-weight:bold; margin-top:8px; }
+    .muted { color:#6b7280; font-size:13px; }
+    .print-btn {
+      margin-top:12px;
+      background:#0b5ed7;
+      color:#fff;
+      border:none;
+      border-radius:6px;
+      padding:10px 14px;
+      font-family:'Times New Roman', serif;
+      font-size:16px;
+      cursor:pointer;
+    }
+    @media print {
+      .print-btn { display:none; }
+      body { margin:0; }
+      .wrap { border:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <div class='author'>A software program authored by Cuongct</div>
+    <h1>PHIẾU TRẢ ĐỒ GIẶT LÀ</h1>
+    <div class='grid'>
+      <div>
+        <table>
+          <tr><td class='label'>Mã đơn hàng:</td><td>#2</td></tr>
+          <tr><td class='label'>Tên khách hàng:</td><td>Hoàng</td></tr>
+          <tr><td class='label'>Số điện thoại:</td><td>123</td></tr>
+          <tr><td class='label'>Dịch vụ:</td><td>Giặt hấp</td></tr>
+          <tr><td class='label'>Khối lượng:</td><td>3.00 kg</td></tr>
+          <tr><td class='label'>Tổng tiền đơn hàng:</td><td>75.000 VND</td></tr>
+          <tr><td class='label'>Đã thanh toán:</td><td>0 VND</td></tr>
+          <tr><td class='label'>Còn nợ:</td><td>75.000 VND</td></tr>
+          <tr><td class='label'>Trạng thái:</td><td>Mới nhận</td></tr>
+          <tr><td class='label'>Thời gian trả:</td><td>2026-04-02</td></tr>
+          <tr><td class='label'>Ghi chú:</td><td>Không có</td></tr>
+        </table>
+      </div>
+      <div>
+        <div style='font-weight:bold; margin-bottom:8px;'>QR Thanh Toán</div>
+        <img src='payment_qr.png?v=20260402102855' alt='QR thanh toán' style='width:220px;height:220px;border:1px solid #ddd;padding:6px;border-radius:8px;'/>
+        <div class='amount'>Số tiền thanh toán: 75.000 VND</div>
+        <div class='muted'>Quét mã QR để thanh toán theo số tiền đơn hàng.</div>
+        <button class='print-btn' onclick='window.print()'>Print</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
