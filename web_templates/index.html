@@ -96,6 +96,10 @@
                 <button type="submit">Lưu</button>
                 <a class="btn-link" href="{{ url_for('invoice', order_id=row['id']) }}" target="_blank">In đơn</a>
               </form>
+              <form method="post" action="{{ url_for('delete_order_route', order_id=row['id']) }}" class="delete-form"
+                    onsubmit="return confirm('Bạn chắc chắn muốn xóa đơn #{{ row['id'] }}?');">
+                <button type="submit" class="btn-danger">Xóa đơn</button>
+              </form>
             </details>
           </td>
         </tr>

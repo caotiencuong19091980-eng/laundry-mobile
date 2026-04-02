@@ -119,6 +119,15 @@ summary { cursor: pointer; color: var(--primary-2); font-weight: 700; }
   padding: 8px;
   border-radius: 8px;
 }
+.delete-form { margin-top: 8px; }
+.btn-danger {
+  border: none;
+  border-radius: 8px;
+  background: #dc2626;
+  color: #fff;
+  padding: 8px 10px;
+  width: 100%;
+}
 .flash-group { display: grid; gap: 8px; }
 .flash { padding: 10px; border-radius: 10px; font-size: 14px; }
 .flash.success { background: #dcfce7; border: 1px solid #86efac; }

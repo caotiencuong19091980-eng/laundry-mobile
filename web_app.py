@@ -306,6 +306,16 @@ def update_order(order_id: int, status: str, paid_amount: float, note: str) -> N
     conn.close()
 
 
+def delete_order(order_id: int) -> bool:
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql("DELETE FROM orders WHERE id = ?"), (order_id,))
+    deleted = cur.rowcount
+    conn.commit()
+    conn.close()
+    return bool(deleted and int(deleted) > 0)
+
+
 def money(value: float) -> str:
     return f"{value:,.0f} VND".replace(",", ".")
 
@@ -479,6 +489,15 @@ def update_order_route(order_id: int):
 
     update_order(order_id, status, paid, note)
     flash(f"Đã cập nhật đơn #{order_id}.", "success")
+    return redirect(url_for("index"))
+
+
+@app.post("/orders/<int:order_id>/delete")
+def delete_order_route(order_id: int):
+    if delete_order(order_id):
+        flash(f"Đã xóa đơn #{order_id}.", "success")
+    else:
+        flash("Không tìm thấy đơn để xóa.", "error")
     return redirect(url_for("index"))
 
 
