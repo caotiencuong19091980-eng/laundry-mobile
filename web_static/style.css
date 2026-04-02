@@ -100,6 +100,24 @@ input, select {
   gap: 8px;
   align-items: end;
 }
+.change-pass-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  align-items: end;
+}
+.change-pass-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+}
+.change-pass-form button {
+  border: none;
+  border-radius: 8px;
+  background: var(--primary-2);
+  color: #fff;
+  padding: 9px 12px;
+}
 .report-row label {
   display: grid;
   gap: 4px;
@@ -135,7 +153,6 @@ summary { cursor: pointer; color: var(--primary-2); font-weight: 700; }
   padding: 8px;
   border-radius: 8px;
 }
-.inline-link { margin-left: 8px; padding: 5px 10px; font-size: 13px; }
 .delete-form { margin-top: 8px; }
 .btn-danger {
   border: none;
@@ -180,6 +197,7 @@ summary { cursor: pointer; color: var(--primary-2); font-weight: 700; }
   .search-row { flex-wrap: wrap; }
   .search-row button { width: 100%; }
   .report-row { grid-template-columns: 1fr; }
+  .change-pass-form { grid-template-columns: 1fr; }
   .report-grid { grid-template-columns: 1fr; }
   .table-wrap { overflow: visible; }
   table { min-width: 0; border-collapse: separate; border-spacing: 0 8px; }

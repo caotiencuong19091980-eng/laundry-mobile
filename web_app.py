@@ -24,7 +24,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 IS_POSTGRES = bool(DATABASE_URL)
 DEFAULT_USERNAME = os.getenv("DEFAULT_USERNAME", "admin")
 DEFAULT_PASSWORD = os.getenv("DEFAULT_PASSWORD", "123456")
-SMS_RECOVERY_NUMBER = "0987567556"
+PASSWORD_RESET_CODE = os.getenv("PASSWORD_RESET_CODE", "HT2026")
 
 app = Flask(
     __name__,
@@ -439,7 +439,7 @@ def login():
         user = get_user_by_username(username)
         if not user or not check_password_hash(user["password_hash"], password):
             flash("Tên đăng nhập hoặc mật khẩu không đúng.", "error")
-            return render_template("login.html", sms_number=SMS_RECOVERY_NUMBER)
+            return render_template("login.html")
 
         session["username"] = username
         session.permanent = remember
@@ -448,7 +448,7 @@ def login():
 
     if session.get("username"):
         return redirect(url_for("index"))
-    return render_template("login.html", sms_number=SMS_RECOVERY_NUMBER)
+    return render_template("login.html")
 
 
 @app.post("/logout")
@@ -487,6 +487,32 @@ def change_password():
     return redirect(url_for("index"))
 
 
+@app.post("/forgot-password")
+def forgot_password():
+    username = request.form.get("username", "").strip()
+    reset_code = request.form.get("reset_code", "").strip()
+    new_password = request.form.get("new_password", "")
+    confirm_password = request.form.get("confirm_password", "")
+
+    user = get_user_by_username(username)
+    if not user:
+        flash("Không tìm thấy tài khoản.", "error")
+        return redirect(url_for("login"))
+    if reset_code != PASSWORD_RESET_CODE:
+        flash("Mã khôi phục không đúng.", "error")
+        return redirect(url_for("login"))
+    if len(new_password) < 6:
+        flash("Mật khẩu mới phải có ít nhất 6 ký tự.", "error")
+        return redirect(url_for("login"))
+    if new_password != confirm_password:
+        flash("Xác nhận mật khẩu mới không khớp.", "error")
+        return redirect(url_for("login"))
+
+    update_password(username, new_password)
+    flash("Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.", "success")
+    return redirect(url_for("login"))
+
+
 @app.route("/")
 def index():
     keyword = request.args.get("q", "").strip()
@@ -517,7 +543,6 @@ def index():
         report_unpaid=unpaid,
         total_debt=total_debt,
         debt_customers=len(debt_customers),
-        sms_number=SMS_RECOVERY_NUMBER,
         money=money,
     )
 
