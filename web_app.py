@@ -7,7 +7,7 @@ from datetime import datetime, date
 from pathlib import Path
 from typing import Any
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, send_from_directory, url_for
 try:
     import psycopg2
     from psycopg2.extras import RealDictCursor
@@ -496,6 +496,16 @@ def invoice(order_id: int):
         money=money,
         now=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     )
+
+
+@app.get("/manifest.webmanifest")
+def manifest():
+    return send_from_directory("web_static", "manifest.webmanifest", mimetype="application/manifest+json")
+
+
+@app.get("/sw.js")
+def service_worker():
+    return send_from_directory("web_static", "sw.js", mimetype="application/javascript")
 
 
 init_db()

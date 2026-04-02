@@ -3,6 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b5ed7" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Laundry HT" />
+  <link rel="manifest" href="{{ url_for('manifest') }}" />
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='payment_qr.png') }}" />
   <title>{% block title %}Hệ thống quản lý giặt là Hương Thịnh cơ sở 1{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
@@ -25,5 +31,14 @@
 
     {% block content %}{% endblock %}
   </main>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/sw.js").catch(function (err) {
+          console.log("SW register failed:", err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

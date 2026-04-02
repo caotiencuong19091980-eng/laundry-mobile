@@ -29,6 +29,15 @@ Server mặc định chạy tại:
 - Trên điện thoại/iPad mở trình duyệt:
   - `http://192.168.1.10:5000`
 
+## Cài như app trên iPhone (PWA)
+
+Với bản cloud Railway (`https://...up.railway.app`):
+
+1. Mở URL trên Safari iPhone
+2. Bấm nút `Share`
+3. Chọn `Add to Home Screen`
+4. Mở icon ngoài màn hình để dùng như app (standalone)
+
 ## Chức năng bản web
 
 - Tạo đơn mới

@@ -1,0 +1,18 @@
+﻿{
+  "name": "Hệ thống quản lý giặt là Hương Thịnh cơ sở 1",
+  "short_name": "Laundry HT",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ecf8f7",
+  "theme_color": "#0b5ed7",
+  "description": "Quản lý đơn hàng giặt là trên điện thoại iPhone/Android.",
+  "icons": [
+    {
+      "src": "/static/payment_qr.png",
+      "sizes": "282x276",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
