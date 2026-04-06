@@ -17,6 +17,24 @@
     <button type="submit" class="btn-primary">Đăng nhập</button>
   </form>
   <div class="forgot-box">
+    <p><b>Đổi mật khẩu</b></p>
+    <form method="post" action="{{ url_for('change_password_login') }}" class="auth-form">
+      <label>Tên đăng nhập
+        <input name="username" required />
+      </label>
+      <label>Mật khẩu hiện tại
+        <input type="password" name="current_password" required />
+      </label>
+      <label>Mật khẩu mới
+        <input type="password" name="new_password" required />
+      </label>
+      <label>Xác nhận mật khẩu mới
+        <input type="password" name="confirm_password" required />
+      </label>
+      <button type="submit" class="btn-primary">Đổi mật khẩu</button>
+    </form>
+  </div>
+  <div class="forgot-box">
     <p><b>Quên mật khẩu? Đặt lại bằng mã khôi phục</b></p>
     <form method="post" action="{{ url_for('forgot_password') }}" class="auth-form">
       <label>Tên đăng nhập

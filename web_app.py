@@ -418,6 +418,8 @@ def update_password(username: str, new_password: str) -> None:
 def require_login():
     public_endpoints = {
         "login",
+        "change_password_login",
+        "forgot_password",
         "manifest",
         "service_worker",
         "static",
@@ -485,6 +487,32 @@ def change_password():
     update_password(username, new_password)
     flash("Đổi mật khẩu thành công.", "success")
     return redirect(url_for("index"))
+
+
+@app.post("/change-password-login")
+def change_password_login():
+    username = request.form.get("username", "").strip()
+    current_password = request.form.get("current_password", "")
+    new_password = request.form.get("new_password", "")
+    confirm_password = request.form.get("confirm_password", "")
+
+    user = get_user_by_username(username)
+    if not user:
+        flash("Không tìm thấy tài khoản.", "error")
+        return redirect(url_for("login"))
+    if not check_password_hash(user["password_hash"], current_password):
+        flash("Mật khẩu hiện tại không đúng.", "error")
+        return redirect(url_for("login"))
+    if len(new_password) < 6:
+        flash("Mật khẩu mới phải có ít nhất 6 ký tự.", "error")
+        return redirect(url_for("login"))
+    if new_password != confirm_password:
+        flash("Xác nhận mật khẩu mới không khớp.", "error")
+        return redirect(url_for("login"))
+
+    update_password(username, new_password)
+    flash("Đổi mật khẩu thành công. Vui lòng đăng nhập lại.", "success")
+    return redirect(url_for("login"))
 
 
 @app.post("/forgot-password")

@@ -56,17 +56,6 @@
 </section>
 
 <section class="card">
-  <h2>Tài khoản</h2>
-  <p>Đang đăng nhập: <b>{{ username }}</b></p>
-  <form method="post" action="{{ url_for('change_password') }}" class="change-pass-form">
-    <label>Mật khẩu hiện tại<input type="password" name="current_password" required /></label>
-    <label>Mật khẩu mới<input type="password" name="new_password" required /></label>
-    <label>Xác nhận mật khẩu mới<input type="password" name="confirm_password" required /></label>
-    <button type="submit">Đổi mật khẩu</button>
-  </form>
-</section>
-
-<section class="card">
   <h2>Danh sách đơn hàng</h2>
   <div class="table-wrap">
     <table>
@@ -87,7 +76,6 @@
           <td data-label="Nợ">{{ money(row['debt_amount'] if row['debt_amount'] > 0 else 0) }}</td>
           <td data-label="Trạng thái">{{ row['status'] }}</td>
           <td data-label="Thao tác">
-            <a class="btn-link" href="{{ url_for('invoice', order_id=row['id']) }}">In hóa đơn</a>
             <details>
               <summary>Update</summary>
               <form method="post" action="{{ url_for('update_order_route', order_id=row['id']) }}" class="mini-form">
@@ -106,6 +94,7 @@
                 </label>
                 <label>Ghi chú<input name="note" value="{{ row['note'] or '' }}" /></label>
                 <button type="submit">Lưu</button>
+                <a class="btn-link" href="{{ url_for('invoice', order_id=row['id']) }}">In hóa đơn</a>
               </form>
               <form method="post" action="{{ url_for('delete_order_route', order_id=row['id']) }}" class="delete-form"
                     onsubmit="return confirm('Bạn chắc chắn muốn xóa đơn #{{ row['id'] }}?');">
