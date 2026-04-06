@@ -105,7 +105,7 @@
                 </label>
                 <label>Ghi chú<input name="note" value="{{ row['note'] or '' }}" /></label>
                 <button type="submit">Lưu</button>
-                <a class="btn-link" href="{{ url_for('invoice', order_id=row['id']) }}" target="_blank">In đơn</a>
+                <a class="btn-link" href="{{ url_for('invoice', order_id=row['id']) }}">In đơn</a>
               </form>
               <form method="post" action="{{ url_for('delete_order_route', order_id=row['id']) }}" class="delete-form"
                     onsubmit="return confirm('Bạn chắc chắn muốn xóa đơn #{{ row['id'] }}?');">

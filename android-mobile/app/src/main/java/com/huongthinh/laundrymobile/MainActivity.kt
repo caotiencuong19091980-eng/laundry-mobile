@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnPrinter: Button
     private lateinit var progressBar: ProgressBar
     private lateinit var preferences: SharedPreferences
+    private var pendingPrintPayload: String? = null
+    private var pendingAction: String = ACTION_NONE
 
     private val bluetoothAdapter: BluetoothAdapter? by lazy { BluetoothAdapter.getDefaultAdapter() }
 
@@ -45,8 +47,24 @@ class MainActivity : AppCompatActivity() {
         val denied = results.entries.any { !it.value }
         if (denied) {
             toast("Thiếu quyền Bluetooth để in hóa đơn.")
+            pendingPrintPayload = null
+            pendingAction = ACTION_NONE
         } else {
-            showPrinterPicker()
+            when (pendingAction) {
+                ACTION_CONFIGURE -> showPrinterPicker()
+                ACTION_PRINT -> {
+                    val payload = pendingPrintPayload
+                    pendingPrintPayload = null
+                    pendingAction = ACTION_NONE
+                    if (!payload.isNullOrBlank()) {
+                        this@MainActivity.printEscPos(payload)
+                    }
+                }
+                else -> {
+                    pendingPrintPayload = null
+                    pendingAction = ACTION_NONE
+                }
+            }
         }
     }
 
@@ -103,9 +121,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        btnPrinter.setOnClickListener {
-            requestBluetoothPermissionsOrPickPrinter()
-        }
+        btnPrinter.setOnClickListener { startConfigurePrinter() }
 
         if (savedInstanceState == null) {
             webView.loadUrl(savedUrl)
@@ -130,7 +146,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestBluetoothPermissionsOrPickPrinter() {
+    private fun startConfigurePrinter() {
+        pendingAction = ACTION_CONFIGURE
+        pendingPrintPayload = null
+        requestBluetoothPermissionsIfNeeded()
+    }
+
+    private fun requestBluetoothPermissionsIfNeeded() {
         val required = mutableListOf<String>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
@@ -142,7 +164,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (required.isEmpty()) {
-            showPrinterPicker()
+            if (pendingAction == ACTION_CONFIGURE) {
+                showPrinterPicker()
+            } else if (pendingAction == ACTION_PRINT) {
+                val payload = pendingPrintPayload
+                pendingPrintPayload = null
+                pendingAction = ACTION_NONE
+                if (!payload.isNullOrBlank()) {
+                    this@MainActivity.printEscPos(payload)
+                }
+            }
         } else {
             permissionLauncher.launch(required.toTypedArray())
         }
@@ -183,6 +214,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun printEscPos(payloadJson: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val hasConnectPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) == PackageManager.PERMISSION_GRANTED
+            val hasScanPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!hasConnectPermission || !hasScanPermission) {
+                pendingAction = ACTION_PRINT
+                pendingPrintPayload = payloadJson
+                requestBluetoothPermissionsIfNeeded()
+                return
+            }
+        }
+
         val adapter = bluetoothAdapter
         if (adapter == null) {
             toast("Thiết bị không hỗ trợ Bluetooth.")
@@ -302,12 +350,12 @@ class MainActivity : AppCompatActivity() {
     inner class AndroidEscPosBridge {
         @JavascriptInterface
         fun printEscPos(payload: String) {
-            printEscPos(payload)
+            this@MainActivity.printEscPos(payload)
         }
 
         @JavascriptInterface
         fun configurePrinter() {
-            runOnUiThread { requestBluetoothPermissionsOrPickPrinter() }
+            runOnUiThread { startConfigurePrinter() }
         }
     }
 
@@ -315,6 +363,9 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_SERVER_URL = "server_url"
         private const val KEY_PRINTER_MAC = "printer_mac"
         private const val DEFAULT_URL = "http://192.168.1.10:5000"
+        private const val ACTION_NONE = "none"
+        private const val ACTION_CONFIGURE = "configure"
+        private const val ACTION_PRINT = "print"
         private val SPP_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     }
 }
