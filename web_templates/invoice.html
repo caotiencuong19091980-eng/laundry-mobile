@@ -18,9 +18,11 @@
     .divider { border-top: 0.2mm dashed #333; margin: 0.5mm 0; }
     .credit { font-size: 5.7pt; text-align: center; margin-top: 0.4mm; }
     .print-btn { display: none; }
+    .bt-print-btn { display: none; }
     @media screen {
       body { background: #f3f4f6; padding: 10px; }
       .print-btn { display: block; width: 100%; margin-top: 10px; border: none; background: #0b5ed7; color: #fff; border-radius: 8px; padding: 8px; font-size: 14px; }
+      .bt-print-btn { display: none; width: 100%; margin-top: 8px; border: none; background: #0a8f4d; color: #fff; border-radius: 8px; padding: 8px; font-size: 14px; }
     }
   </style>
 </head>
@@ -51,6 +53,40 @@
     </div>
     <div class="credit">A software program authored by Cuongct</div>
     <button class="print-btn" onclick="window.print()">In hóa đơn</button>
+    <button id="btPrintBtn" class="bt-print-btn" type="button" onclick="printEscPosBluetooth()">In Bluetooth ESC/POS</button>
   </div>
+  <script>
+    const invoicePayload = {
+      shopName: "HUONG THINH CO SO 1",
+      orderId: "{{ order['id'] }}",
+      customer: {{ order['name']|tojson }},
+      phone: {{ order['phone']|tojson }},
+      service: {{ (order['service_type'] ~ " | " ~ ("%.2f"|format(order['weight_kg'])) ~ "kg")|tojson }},
+      total: {{ money(order['total_amount'])|tojson }},
+      paid: {{ money(order['paid_amount'])|tojson }},
+      debt: {{ money(order['debt_amount'] if order['debt_amount'] > 0 else 0)|tojson }},
+      status: {{ order['status']|tojson }},
+      time: {{ now|tojson }},
+      lines: [
+        "Thanh toan QR",
+        "So tien QR: {{ money(order['total_amount']) }}"
+      ]
+    };
+
+    function printEscPosBluetooth() {
+      if (!window.AndroidEscPos || !window.AndroidEscPos.printEscPos) {
+        alert("Chức năng này chỉ dùng trong app Android LaundryMobile.");
+        return;
+      }
+      window.AndroidEscPos.printEscPos(JSON.stringify(invoicePayload));
+    }
+
+    window.addEventListener("load", () => {
+      const btBtn = document.getElementById("btPrintBtn");
+      if (window.AndroidEscPos && window.AndroidEscPos.printEscPos) {
+        btBtn.style.display = "block";
+      }
+    });
+  </script>
 </body>
 </html>
