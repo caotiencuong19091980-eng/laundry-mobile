@@ -52,7 +52,7 @@
       </div>
     </div>
     <div class="credit">A software program authored by Cuongct</div>
-    <button class="print-btn" onclick="window.print()">In hóa đơn</button>
+    <button class="print-btn" onclick="triggerNormalPrint()">In hóa đơn</button>
     <button id="btPrintBtn" class="bt-print-btn" type="button" onclick="printEscPosBluetooth()">In Bluetooth ESC/POS</button>
   </div>
   <script>
@@ -73,9 +73,17 @@
       ]
     };
 
+    function triggerNormalPrint() {
+      if (typeof window.print === "function") {
+        window.print();
+        return;
+      }
+      alert("Thiết bị/trình duyệt này không hỗ trợ in trực tiếp. Hãy mở bằng Chrome hoặc dùng app Android để in Bluetooth.");
+    }
+
     function printEscPosBluetooth() {
       if (!window.AndroidEscPos || !window.AndroidEscPos.printEscPos) {
-        alert("Chức năng này chỉ dùng trong app Android LaundryMobile.");
+        alert("In Bluetooth ESC/POS chỉ hoạt động trong APK Android LaundryMobile, không hoạt động trên trình duyệt web.");
         return;
       }
       window.AndroidEscPos.printEscPos(JSON.stringify(invoicePayload));
